@@ -1,7 +1,7 @@
 # Pr40_press
 Warning: this is private project with multiple russian language comments inside.
 
-Microchip
-microcontroller: dsPIC33F
-MPLAB IDE 8.90
+microcontroller: Microchip dsPIC33F
+MPLAB IDE 8.90 + Win10x64
 compiler: C30
+
