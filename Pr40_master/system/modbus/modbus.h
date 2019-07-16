@@ -2,7 +2,7 @@
 #define _MODBUS_INCLUDED
 
 
-#define MY_MASTER_OLD //dml!!!
+//#define MY_MASTER_OLD //dml!!!
 
 //---------константы---------------
 #define USART_MASTER_RX_TIMEOUT        500     //3,2мс=500*6.4мкс(=1такт TMR8 при делителе 1:256) параметр нужен при работе мастера с компом
