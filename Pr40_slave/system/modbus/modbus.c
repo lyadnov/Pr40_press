@@ -3,6 +3,7 @@
 
 #include "system\eeprom\eeprom.h"
 #include "system\adc\adc.h"
+#include "system\pmode\pmode.h"
 #include "p33FJ128GP706.h"
 
 
@@ -38,6 +39,13 @@ void modbus_init(void)
   for(i=0;i<NUMBER_OF_SENSORS;i++)
   {
     slave_regs[REG_CONFIG_K1+i]=cfg_k[i];
+  }
+  
+  //регистры pmode
+  slave_regs[REG_CONFIG_PMODE] = cfg_pmode;
+  for (i = 0; i < NUMBER_OF_P2_INTERVALS; i++)
+  {
+    slave_regs[REG_CONFIG_P2_INTERVAL1 + i] = cfg_p2_intervals[i];
   }
     
   //прерывания
@@ -108,9 +116,57 @@ void modbus_read_reg_func(unsigned int addr, unsigned int num)
 }
 
 
+
+static void modbus_save_reg(unsigned int value)
+{
+	int i;
+	switch (value)
+	{
+		case CMD_SAVE_K:
+	    	for(i = 0; i < NUMBER_OF_SENSORS; i++)
+          	{
+            	if (cfg_k[i] != slave_regs[REG_CONFIG_K1 + i])
+            	{
+              		cfg_k[i] = slave_regs[REG_CONFIG_K1 + i];
+              		eeprom_write_word(ADDR_EEPROM_K1 + i * 2, cfg_k[i]);
+            	}
+          	}
+	    	break;
+	    case CMD_SAVE_SLAVE_ADDR:
+	    	cfg_slave_addr=slave_regs[REG_CONFIG_SLAVE_ADDR];
+        	eeprom_write_byte(ADDR_EEPROM_SLAVE_ADDR,cfg_slave_addr);
+	    	break;
+	    case CMD_SAVE_START_PAUSE:
+			cfg_start_pause=slave_regs[REG_CONFIG_START_PAUSE];
+        	eeprom_write_word(ADDR_EEPROM_START_PAUSE,cfg_start_pause);
+	    	break;
+	    case CMD_SAVE_MEASURE_INTERVAL:
+        	cfg_measure_interval=slave_regs[REG_CONFIG_MEASURE_INTERVAL];
+        	eeprom_write_byte(ADDR_EEPROM_MEASURE_INTERVAL,cfg_measure_interval);
+			break;
+		case CMD_SAVE_PMODE:
+	        if (cfg_pmode != slave_regs[REG_CONFIG_PMODE])
+	        {
+	        	cfg_pmode = slave_regs[REG_CONFIG_PMODE];
+	        	eeprom_write_byte(ADDR_EEPROM_PMODE, cfg_pmode);
+			}
+			for(i = 0; i < NUMBER_OF_P2_INTERVALS; i++)
+	        {
+	        	if(cfg_p2_intervals[i] != slave_regs[REG_CONFIG_P2_INTERVAL1 + i])
+	            {
+	              cfg_p2_intervals[i] = slave_regs[REG_CONFIG_P2_INTERVAL1 + i];
+	              eeprom_write_word(ADDR_EEPROM_P2_INTERVAL1 + i, cfg_p2_intervals[i]);
+	            }
+	        }	
+			break;
+    	default:
+      		break;
+ 	}     		 
+}
+
+
 void modbus_write_reg_func(unsigned int addr,unsigned int value)
 {
-  int i;
   switch (addr)
   {
     case REG_CONFIG_SLAVE_ADDR:
@@ -136,40 +192,17 @@ void modbus_write_reg_func(unsigned int addr,unsigned int value)
       }
       break;
     case REG_CONTROL_SAVE:
-      if(value==CMD_SAVE_K)
-      {
-          for(i=0;i<NUMBER_OF_SENSORS;i++)
-          {
-            if(cfg_k[i]!=slave_regs[REG_CONFIG_K1+i])
-            {
-              cfg_k[i]=slave_regs[REG_CONFIG_K1+i];
-              eeprom_write_word(ADDR_EEPROM_K1+i*2,cfg_k[i]);
-            }
-          }
-      }
-      else if(value==CMD_SAVE_SLAVE_ADDR)
-      {
-        cfg_slave_addr=slave_regs[REG_CONFIG_SLAVE_ADDR];
-        eeprom_write_byte(ADDR_EEPROM_SLAVE_ADDR,cfg_slave_addr);
-      }
-      else if(value==CMD_SAVE_START_PAUSE)
-      {
-        cfg_start_pause=slave_regs[REG_CONFIG_START_PAUSE];
-        eeprom_write_word(ADDR_EEPROM_START_PAUSE,cfg_start_pause);
-      }
-      else if(value==CMD_SAVE_MEASURE_INTERVAL)
-      {
-        cfg_measure_interval=slave_regs[REG_CONFIG_MEASURE_INTERVAL];
-        eeprom_write_byte(ADDR_EEPROM_MEASURE_INTERVAL,cfg_measure_interval);
-      }
-      break;
+    	modbus_save_reg(value);
+		break;
+    case REG_CONFIG_PMODE:
+    	slave_regs[addr]=value;
+    	pmode_change(value);
+    	break;
     default:
       break; 
-  
   }
-   return;
+  return;
 }
-
 
 
 void modbus_start_full_measurement(void)

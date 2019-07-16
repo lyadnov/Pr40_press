@@ -8,12 +8,13 @@
 #include "system\usart\usart.h"
 #include "system\adc\adc.h"
 #include "system\modbus\modbus.h"
+#include "system\pmode\pmode.h"
 
 
 
 //---------константы---------------
 #define DEBUG 0
-#define EEPROM_VERSION  0x04  //для записи новых значений параметров в EEPROM
+#define EEPROM_VERSION  0x05  //для записи новых значений параметров в EEPROM
 
 //---------переменные--------------
 
@@ -108,6 +109,8 @@ void Init(void)
   IEC0bits.T1IE=1;    //разрешаем прерывания от таймера1
   
   
+  pmode_init();
+  
   //----modbus----
   modbus_init();
 
@@ -120,6 +123,7 @@ void eeprom_write_default_values()
 {
   eeprom_write_byte(ADDR_EEPROM_VERSION,EEPROM_VERSION);   //версия еепром
   modbus_eeprom_write_default_values();
+  pmode_eeprom_write_default_values();
   return;
 }
 

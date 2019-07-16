@@ -42,6 +42,7 @@
   #define  CMD_SAVE_SLAVE_ADDR          0x02
   #define  CMD_SAVE_START_PAUSE         0x03
   #define  CMD_SAVE_MEASURE_INTERVAL    0x04
+  #define  CMD_SAVE_PMODE               0x05
 //конфигурация
 #define REG_CONFIG_SLAVE_ADDR           0x03
 #define REG_CONFIG_START_PAUSE          0x04 //пауза перед стартом измерений в мсек
@@ -56,6 +57,7 @@
 #define REG_CONFIG_K8                   (REG_CONFIG_K1+7) 
 #define REG_CONFIG_K9                   (REG_CONFIG_K1+8) 
 #define REG_CONFIG_K10                  (REG_CONFIG_K1+9) //калибровочный коэффициент для 10го датчика
+
 //статистика Modbus
 #define REG_STAT_TOTAL_FRAME_NUM        0x10
 #define REG_STAT_SLAVE_ADDR_MISMATCH    0x11
@@ -80,6 +82,26 @@
 #define REG_SENSOR9_CURRENT_VALUE       0x38 //датчик давления 9
 #define REG_SENSOR10_CURRENT_VALUE      0x39 //датчик сопротивления воды
 #define REG_WATER_LEVEL_CURRENT_VALUE   0x3A //датчик уровня воды
+
+//pmode
+#define REG_CONFIG_PMODE                0x3B
+#define REG_CONFIG_P2_INTERVAL1         0x3C
+#define REG_CONFIG_P2_INTERVAL2         (REG_CONFIG_P2_INTERVAL1 + 1)
+#define REG_CONFIG_P2_INTERVAL3         (REG_CONFIG_P2_INTERVAL1 + 2)
+#define REG_CONFIG_P2_INTERVAL4         (REG_CONFIG_P2_INTERVAL1 + 3)
+#define REG_CONFIG_P2_INTERVAL5         (REG_CONFIG_P2_INTERVAL1 + 4)
+#define REG_CONFIG_P2_INTERVAL6         (REG_CONFIG_P2_INTERVAL1 + 5)
+#define REG_CONFIG_P2_INTERVAL7         (REG_CONFIG_P2_INTERVAL1 + 6)
+#define REG_CONFIG_P2_INTERVAL8         (REG_CONFIG_P2_INTERVAL1 + 7)
+#define REG_CONFIG_P2_INTERVAL9         (REG_CONFIG_P2_INTERVAL1 + 8)
+#define REG_CONFIG_P2_INTERVAL10        (REG_CONFIG_P2_INTERVAL1 + 9)
+#define REG_CONFIG_P2_INTERVAL11        (REG_CONFIG_P2_INTERVAL1 + 10)
+#define REG_CONFIG_P2_INTERVAL12        (REG_CONFIG_P2_INTERVAL1 + 11)
+#define REG_CONFIG_P2_INTERVAL13        (REG_CONFIG_P2_INTERVAL1 + 12)
+#define REG_CONFIG_P2_INTERVAL14        (REG_CONFIG_P2_INTERVAL1 + 13)
+#define REG_CONFIG_P2_INTERVAL15        (REG_CONFIG_P2_INTERVAL1 + 14)
+#define REG_CONFIG_P2_INTERVAL16        (REG_CONFIG_P2_INTERVAL1 + 15)
+
 
 //цепочка измерений 100 точек на каждом датчике
 #define REG_SENSOR1_RECORD_VALUE        REALTIME_REG_NUM
