@@ -45,8 +45,11 @@ unsigned char eeprom_read(unsigned char addr)
 void eeprom_read_buf(unsigned char addr,unsigned char *buf,unsigned char size)
 {
 	unsigned int i;
-	for(i=0;i<size;i++) buf[i]=eeprom_read(addr+i);
-		return;
+	
+	for(i=0;i<size;i++)
+		buf[i]=eeprom_read(addr+i);
+	
+	return;
 }
 
 ///////////////////////////////////
@@ -54,7 +57,7 @@ void eeprom_write_byte(unsigned char addr,unsigned char data)
 {
 	unsigned int i;
 	unsigned long temp;
-	unsigned char eeprom_buf[1536]; //буфер для вычитывания целого блока флеш-памяти //dml!!! этот буфер можно покоцать
+	unsigned char eeprom_buf[1536]; //буфер для вычитывания целого блока флеш-памяти
 	
 	if(addr>=EEPROM_SIZE)
 	{
@@ -90,7 +93,7 @@ void eeprom_write_buf(unsigned char addr,unsigned char *buf,unsigned char size)
 {
 	unsigned int i;
 	unsigned long temp;
-	unsigned char eeprom_buf[1536]; //буфер для вычитывания целого блока флеш-памяти //dml!!! этот буфер можно покоцать
+	unsigned char eeprom_buf[1536]; //буфер для вычитывания целого блока флеш-памяти
 	
 	if( (addr>=EEPROM_SIZE) || ((addr+size) >= EEPROM_SIZE) )
 	{
@@ -113,4 +116,3 @@ void eeprom_write_buf(unsigned char addr,unsigned char *buf,unsigned char size)
 	flash_write_block(ADDR_BLOCK_WITH_EEPROM_START,eeprom_buf);
 	return;
 }
-

@@ -26,8 +26,7 @@ void UsartInit(void)
 	
 	TRISBbits.TRISB15=0;    //управл€ем выходом 1=TX 0=RX
 
-	
-		
+			
 	//модуль usart
 	U1MODEbits.BRGH=1;      //High Baud Rate Enable bit
 	U1BRG=86;                //115200кб/сек= (40*1000*1000√ц)/(4*(86+1))  
@@ -66,10 +65,6 @@ void UsartTxByteX(char data)
 {
 
 	while(U1STAbits.UTXBF==1); //ждем окончани€ отправки предыдущих данных
-	//while(U1STAbits.TRMT==0); //ждем окончани€ отправки предыдущих данных
-	
- 
-	
 	U1TXREG = data;
  
 }
@@ -98,9 +93,9 @@ char UsartRxByte(unsigned char *data)
 		 //slave_regs[REG_ERROR_USART_PARITY]++; 
 		return(1);
 	}
-		
+
 	*data = U1RXREG; 
-		
+
 	if(U1STAbits.OERR)                 //переполнение буфера
 	{ 
 		U1STAbits.OERR=0;
@@ -128,7 +123,7 @@ char UsartRxByte_withTimeout(unsigned char *data)  //используетс€ только мастеро
 		IFS3bits.T8IF=0; //сбрасываем флаг
 		T8CONbits.TON=1; //включаем таймер 8
 		while( (U1STAbits.URXDA==0)&&(IFS3bits.T8IF==0) );
-				
+
 		if(U1STAbits.URXDA==0)
 		{
 			//выходим по таймауту
@@ -141,8 +136,8 @@ char UsartRxByte_withTimeout(unsigned char *data)  //используетс€ только мастеро
 			T8CONbits.TON=0; //выключаем таймер 8
 			break;
 		}
-	}while(1);    
-		
+	}while(1);
+
 	//провер€ю что прин€ли данные без ошибок
 	if(U1STAbits.FERR)                 // If a framing error occured
 	{
@@ -156,9 +151,9 @@ char UsartRxByte_withTimeout(unsigned char *data)  //используетс€ только мастеро
 		stat_usart_error_parity++;
 		return(1);
 	}
-		
-		*data = U1RXREG; 
-		
+
+	*data = U1RXREG; 
+
 	if(U1STAbits.OERR)                 //переполнение буфера
 	{ 
 		U1STAbits.OERR=0;
@@ -168,8 +163,6 @@ char UsartRxByte_withTimeout(unsigned char *data)  //используетс€ только мастеро
 
 	return (0);                     // Return the received data
 }
-
-
 
 
 ///////////////////////////////////

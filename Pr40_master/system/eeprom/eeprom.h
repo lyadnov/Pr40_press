@@ -25,5 +25,3 @@ void eeprom_write_buf(unsigned char addr,unsigned char *buf,unsigned char size);
 
 #endif
 
-
-
