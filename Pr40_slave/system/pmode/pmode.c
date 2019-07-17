@@ -44,8 +44,6 @@ void pmode_eeprom_write_default_values(void)
 {
 	int i;
 	
-	eeprom_write_byte(ADDR_EEPROM_PMODE,DEFAULT_PMODE);
-	
 	for (i = 0; i < NUMBER_OF_P2_INTERVALS; i++)
 		eeprom_write_byte(ADDR_EEPROM_P2_INTERVAL1 + i, DEFAULT_P2_INTERVAL);
 }
@@ -56,12 +54,15 @@ void pmode_init(void)
 	int i;
 
 	//ножки
+	C1CTRL1bits.REQOP = 1; //Set Disable mode for CAN module 
+
 	TRISFbits.TRISF0 = 0; //P1 mode
 	TRISFbits.TRISF1 = 0; //P3 mode
 	TRISDbits.TRISD1 = 0; //P2 mode
 	
+
 	//переменные EEPROM
-	cfg_pmode = eeprom_read(ADDR_EEPROM_PMODE);
+	cfg_pmode = 0;
 	for (i = 0; i < NUMBER_OF_P2_INTERVALS; i++)
 		cfg_p2_intervals[i] = eeprom_read(ADDR_EEPROM_P2_INTERVAL1 + i);
 		

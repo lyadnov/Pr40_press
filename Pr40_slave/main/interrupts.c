@@ -11,17 +11,19 @@
 
 void __attribute__((interrupt,auto_psv)) _T1Interrupt(void)
 {
-  //моргаем диодом RB14 
-  //диод RB15 ддя отладки не используем т.к он управляет TX\RX на линии USART
-  if(PORTBbits.RB14==0) PORTBbits.RB14=1;
-  else PORTBbits.RB14=0;
-  
-  //if(LATBbits.LATB0==0) LATBbits.LATB0=1;
-  //else LATBbits.LATB0=0;
-  
-  IFS0bits.T1IF=0;
-  
-  return;
+	//моргаем диодом RB14 
+	//диод RB15 ддя отладки не используем т.к он управляет TX\RX на линии USART
+	if(PORTBbits.RB14==0)
+		PORTBbits.RB14=1;
+	else
+		PORTBbits.RB14=0;
+	
+	//if(LATBbits.LATB0==0) LATBbits.LATB0=1;
+	//else LATBbits.LATB0=0;
+	
+	IFS0bits.T1IF=0;
+	
+	return;
 }
 
 

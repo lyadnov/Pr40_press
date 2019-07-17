@@ -24,8 +24,7 @@
 #define ADDR_EEPROM_K8               (ADDR_EEPROM_K1+14)
 #define ADDR_EEPROM_K9               (ADDR_EEPROM_K1+16)
 #define ADDR_EEPROM_K10              (ADDR_EEPROM_K1+18) //К10
-#define ADDR_EEPROM_PMODE            0x1E                //1 байт 
-#define ADDR_EEPROM_P2_INTERVAL1     0x1F                //1 байт
+#define ADDR_EEPROM_P2_INTERVAL1     0x1E                //1 байт
 #define ADDR_EEPROM_P2_INTERVAL2     (ADDR_EEPROM_P2_INTERVAL1 + 1)
 #define ADDR_EEPROM_P2_INTERVAL3     (ADDR_EEPROM_P2_INTERVAL1 + 2)
 #define ADDR_EEPROM_P2_INTERVAL4     (ADDR_EEPROM_P2_INTERVAL1 + 3)

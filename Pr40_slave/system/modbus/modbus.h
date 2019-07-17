@@ -36,13 +36,13 @@
 #define REG_MAGIC                       0x00 //тут всегда 0x1234
 //управление
 #define REG_CONTROL_MEASURE_START       0x01 //при записи в этот регистр 1цы начинаются измерения, по всем слейвам
-  #define  CMD_MEASURE_START            0x01
+	#define  CMD_MEASURE_START            0x01
 #define REG_CONTROL_SAVE                0x02 //при записи в этот регистр 1-4, сохраняются соответствующие параметры в EEPROM
-  #define  CMD_SAVE_K                   0x01
-  #define  CMD_SAVE_SLAVE_ADDR          0x02
-  #define  CMD_SAVE_START_PAUSE         0x03
-  #define  CMD_SAVE_MEASURE_INTERVAL    0x04
-  #define  CMD_SAVE_PMODE               0x05
+	#define  CMD_SAVE_K                   0x01
+	#define  CMD_SAVE_SLAVE_ADDR          0x02
+	#define  CMD_SAVE_START_PAUSE         0x03
+	#define  CMD_SAVE_MEASURE_INTERVAL    0x04
+	#define  CMD_SAVE_PMODE               0x05
 //конфигурация
 #define REG_CONFIG_SLAVE_ADDR           0x03
 #define REG_CONFIG_START_PAUSE          0x04 //пауза перед стартом измерений в мсек

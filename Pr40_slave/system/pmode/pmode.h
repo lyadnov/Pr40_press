@@ -2,7 +2,6 @@
 #define _PMODE_INCLUDED
 
 //---------константы---------------
-#define DEFAULT_PMODE           0
 #define DEFAULT_P2_INTERVAL     10 
 
 #define NUMBER_OF_P2_INTERVALS  16 

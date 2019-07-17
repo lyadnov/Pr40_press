@@ -21,9 +21,9 @@ unsigned long flash_read_word(unsigned long addr)
 {
 	if((addr%02)!=0)
 	{
-        error_num=err_FlashOddAddress;
-	    error_out();
-    } 
+		error_num=err_FlashOddAddress;
+		error_out();
+	} 
 	TBLPAG=(addr>>16);
 	flash_addr=addr;
 	
@@ -39,9 +39,9 @@ void flash_erase_block(unsigned long addr)
 {
 	if((addr%1024)!=0)
 	{
-        error_num=err_FlashOddAddress;
-	    error_out();
-    } 
+		error_num=err_FlashOddAddress;
+		error_out();
+	} 
 	NVMCON=0;
 	NVMCONbits.NVMOP=2;     //Memory page erase operation
 	NVMCONbits.ERASE=1;     
@@ -61,9 +61,9 @@ void flash_write_word(unsigned long addr,unsigned long data)
 {
 	if((addr%02)!=0)
 	{
-        error_num=err_FlashOddAddress;
-	    error_out();
-    } 
+		error_num=err_FlashOddAddress;
+		error_out();
+	} 
 	TBLPAG=(addr>>16);
 	flash_addr=addr;
 	flash_result=data;
@@ -81,12 +81,12 @@ void flash_write_word(unsigned long addr,unsigned long data)
 ///////////////////////////////////
 void flash_write_row(unsigned long addr,unsigned char* data)
 //записывает 192 байта
-    {
-    if((addr%128)!=0)
 	{
-        error_num=err_FlashOddAddress;
-	    error_out();
-    } 
+	if((addr%128)!=0)
+	{
+		error_num=err_FlashOddAddress;
+		error_out();
+	} 
 	TBLPAG=(addr>>16);
 	flash_addr=addr;
 	flash_result=(unsigned int) data;
@@ -98,18 +98,18 @@ void flash_write_row(unsigned long addr,unsigned char* data)
 	flash_write_row_asm();
 	
 	NVMCONbits.WREN=0;      //write disable
-    return;
+	return;
 }
 
 ///////////////////////////////////
 void flash_write_block(unsigned long addr,unsigned char* data)
 //записывает блок 1536 байт по заданному адресу
 {
-    if((addr%1024)!=0)
+	if((addr%1024)!=0)
 	{
-        error_num=err_FlashOddAddress;
-	    error_out();
-    } 
+		error_num=err_FlashOddAddress;
+		error_out();
+	} 
 	TBLPAG=(addr>>16);
 	flash_addr=addr;
 	flash_result=(unsigned int) data;
@@ -122,5 +122,5 @@ void flash_write_block(unsigned long addr,unsigned char* data)
 
 	NVMCONbits.WREN=0;      //write disable
 
-    return;
+	return;
 }
