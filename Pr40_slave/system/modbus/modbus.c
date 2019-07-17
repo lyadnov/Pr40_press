@@ -203,7 +203,8 @@ void modbus_write_reg_func(unsigned int addr,unsigned int value)
 			if (value > 3)
 				return;
 			pmode_change(value);
-			break;
+			slave_regs[addr] = cfg_pmode;
+			return;
 		case REG_CONFIG_P2_INTERVAL1:
 		case REG_CONFIG_P2_INTERVAL2:
 		case REG_CONFIG_P2_INTERVAL3:
