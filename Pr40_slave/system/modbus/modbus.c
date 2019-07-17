@@ -87,11 +87,12 @@ void modbus_read_reg_func(unsigned int addr, unsigned int num)
 	int i;
 	unsigned long temp;
 	
-	if(addr>=REG_SENSOR1_RECORD_VALUE) return; //на лету вычисл€ем только первые 0x64 регистра
+	if (addr >= REG_SENSOR1_RECORD_VALUE)
+		return; //на лету вычисл€ем только первые 0x64 регистра
 	
-	for(i=addr;i<(addr+num);i++)
+	for (i = addr; i < (addr + num ); i++)
 	{
-		if( (i>=REG_SENSOR1_CURRENT_VALUE) && (i<=REG_SENSOR10_CURRENT_VALUE) )
+		if( (i >= REG_SENSOR1_CURRENT_VALUE) && (i <= REG_SENSOR10_CURRENT_VALUE) )
 		{
 			//slave_regs[i]=ADC_get(i-REG_SENSOR1_CURRENT_VALUE+1);
 			
@@ -102,13 +103,13 @@ void modbus_read_reg_func(unsigned int addr, unsigned int num)
 			//текущее значение мјтм = текј÷ѕ* (2байта)/4095
 			//т.е на мастер передаем значение в мјтм, а мастер делит на 1000 и выводит на экран в јтм
 
-			temp=ADC_get(i-REG_SENSOR1_CURRENT_VALUE);
+			temp = ADC_get(i - REG_SENSOR1_CURRENT_VALUE);
 			//temp=(temp*slave_regs[REG_CONFIG_K1+j])>>12;
-			temp=(temp*slave_regs[REG_CONFIG_K1+i-REG_SENSOR1_CURRENT_VALUE])/4095;
-			slave_regs[i]=temp;
+			temp = (temp * slave_regs[REG_CONFIG_K1 + i - REG_SENSOR1_CURRENT_VALUE]) / 4095;
+			slave_regs[i] = temp;
 		}
-		if(i==REG_WATER_LEVEL_CURRENT_VALUE)
-			slave_regs[i]=PORTGbits.RG6; //датчик уровн€ воды
+		if(i == REG_WATER_LEVEL_CURRENT_VALUE)
+			slave_regs[i] = PORTGbits.RG6; //датчик уровн€ воды
 	}
 	return;
 }
@@ -164,8 +165,17 @@ void modbus_write_reg_func(unsigned int addr,unsigned int value)
 	switch (addr)
 	{
 		case REG_CONFIG_SLAVE_ADDR:
+			if ((value < 1) || (value > 247)) //см. https://ru.wikipedia.org/wiki/Modbus#%D0%92%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5
+				return;
+			break;
 		case REG_CONFIG_START_PAUSE:
+			if ((value < START_PAUSE_MIN_VALUE) || (value > START_PAUSE_MAX_VALUE))
+				return;
+			break;
 		case REG_CONFIG_MEASURE_INTERVAL:
+			if ((value < 1) || (value > 100))
+				return;
+			break;
 		case REG_CONFIG_K1:
 		case REG_CONFIG_K2:
 		case REG_CONFIG_K3:  
@@ -176,25 +186,48 @@ void modbus_write_reg_func(unsigned int addr,unsigned int value)
 		case REG_CONFIG_K8:  
 		case REG_CONFIG_K9:  
 		case REG_CONFIG_K10:  
-			slave_regs[addr]=value; //TODO: проверку на допустимый диапазон добавить тут?
+			if ((value < 1) || (value > K_MAX_VALUE))
+				return;
 			break;
 		case REG_CONTROL_MEASURE_START:
-			if(value==CMD_MEASURE_START)
+			if(value == CMD_MEASURE_START)
 			{
 				modbus_start_full_measurement();
 				slave_regs[REG_STAT_FULL_DUMP_NUM]++;
 			}
-			break;
+			return;
 		case REG_CONTROL_SAVE:
 			modbus_save_reg(value);
-		break;
+			return;
 		case REG_CONFIG_PMODE:
-			slave_regs[addr]=value;
+			if (value > 3)
+				return;
 			pmode_change(value);
 			break;
+		case REG_CONFIG_P2_INTERVAL1:
+		case REG_CONFIG_P2_INTERVAL2:
+		case REG_CONFIG_P2_INTERVAL3:
+		case REG_CONFIG_P2_INTERVAL4:
+		case REG_CONFIG_P2_INTERVAL5:
+		case REG_CONFIG_P2_INTERVAL6:
+		case REG_CONFIG_P2_INTERVAL7:
+		case REG_CONFIG_P2_INTERVAL8:
+		case REG_CONFIG_P2_INTERVAL9:
+		case REG_CONFIG_P2_INTERVAL10:
+		case REG_CONFIG_P2_INTERVAL11:
+		case REG_CONFIG_P2_INTERVAL12:
+		case REG_CONFIG_P2_INTERVAL13:
+		case REG_CONFIG_P2_INTERVAL14:
+		case REG_CONFIG_P2_INTERVAL15:
+		case REG_CONFIG_P2_INTERVAL16:
+			if (value > P2_INTERVAL_PERIOD_MKS)
+				return;
+			break;
 		default:
-			break; 
+			return;   //иначе, если addr > TOTAL_REG_NUM, то запортим ќ«”
 	}
+	
+	slave_regs[addr]=value;
 	return;
 }
 

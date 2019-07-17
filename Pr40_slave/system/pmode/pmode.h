@@ -2,13 +2,8 @@
 #define _PMODE_INCLUDED
 
 //---------константы---------------
-#define DEFAULT_P2_INTERVAL     10 
-
-#define NUMBER_OF_P2_INTERVALS  16 
-
-#define PMODE_P1 1
-#define PMODE_P2 2
-#define PMODE_P3 3
+#define NUMBER_OF_P2_INTERVALS     16
+#define P2_INTERVAL_PERIOD_MKS     100
 
 //---------переменные--------------
 extern unsigned char  cfg_pmode;

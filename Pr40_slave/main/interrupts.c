@@ -3,7 +3,7 @@
 
 
 //---------переменные--------------
-
+volatile unsigned int mks_clock;
 
 //----------функции----------------
 
@@ -25,5 +25,14 @@ void __attribute__((interrupt,auto_psv)) _T1Interrupt(void)
 	
 	return;
 }
+
+
+void __attribute__((interrupt,auto_psv)) _T2Interrupt(void)
+{
+	mks_clock += 2;
+	IFS0bits.T2IF=0;
+	return;
+}
+
 
 

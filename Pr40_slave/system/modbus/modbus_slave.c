@@ -74,7 +74,7 @@ void modbus_slave_loop(void)
 			PORTBbits.RB0=1; //для отладки
 			continue;
 		}
-		PORTBbits.RB0=1; //dml!!! для отладки
+		PORTBbits.RB0=1; //NOTE: для отладки
 	 
 		slave_regs[REG_STAT_TOTAL_FRAME_NUM]++;
 		if(slave_addr==cfg_slave_addr)
@@ -119,8 +119,14 @@ void modbus_slave_loop(void)
 					frame[2]=len*2;
 					for (i=0;i<len;i++)
 					{
-							frame[3+i*2]=slave_regs[reg_addr+i]>>8;
-							frame[4+i*2]=slave_regs[reg_addr+i]&0xff;
+						if ((reg_addr + i) < TOTAL_REG_NUM) {
+							frame[3 + i * 2]=slave_regs[reg_addr + i] >> 8;
+							frame[4 + i * 2]=slave_regs[reg_addr + i ] & 0xff;
+						} else {
+							//пытаются вычитывать несуществуюище регистры, возвращаем 0
+							frame[3 + i * 2] = 0;
+							frame[4 + i * 2] = 0;
+						}
 					}
 					
 					Mb_calcul_crc(frame,(len*2)+3);
