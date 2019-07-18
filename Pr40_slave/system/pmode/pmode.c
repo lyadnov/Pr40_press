@@ -95,7 +95,7 @@ void pmode_init(void)
 	int i;
 
 	//ножки
-	C1CTRL1bits.REQOP = 1; //Set Disable mode for CAN module (на всякий случай)
+	//C1CTRL1bits.REQOP = 1; //Set Disable mode for CAN module (на всякий случай)
 
 	TRISFbits.TRISF0 = 0; //P1 mode
 	TRISFbits.TRISF1 = 0; //P3 mode
@@ -112,7 +112,7 @@ void pmode_init(void)
 	T2CON = 0;
 	T2CONbits.TCS = 0;            //Clock Source Select bit: Internal clock (Fcy=40MHz=Fosc/2=80мгц/2
 	T2CONbits.T32 = 0;            //16bit mode
-	T2CONbits.TCKPS = 1;          //1:1  1такт=25нс
+	T2CONbits.TCKPS = 0;          //1:1  1такт=25нс
 	PR2 = TIMER2_PERIOD;          //2мкс
 	
 }

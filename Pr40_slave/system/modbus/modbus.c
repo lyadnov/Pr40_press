@@ -144,13 +144,12 @@ static void modbus_save_reg(unsigned int value)
 			eeprom_write_byte(ADDR_EEPROM_MEASURE_INTERVAL,cfg_measure_interval);
 			break;
 		case CMD_SAVE_PMODE:
-			cfg_pmode = slave_regs[REG_CONFIG_PMODE];
 			for(i = 0; i < NUMBER_OF_P2_INTERVALS; i++)
 			{
 				if(cfg_p2_intervals[i] != slave_regs[REG_CONFIG_P2_INTERVAL1 + i])
 				{
 					cfg_p2_intervals[i] = slave_regs[REG_CONFIG_P2_INTERVAL1 + i];
-					eeprom_write_word(ADDR_EEPROM_P2_INTERVAL1 + i, cfg_p2_intervals[i]);
+					eeprom_write_byte(ADDR_EEPROM_P2_INTERVAL1 + i, cfg_p2_intervals[i]);
 				}
 			}	
 			break;
