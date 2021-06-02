@@ -9,9 +9,53 @@ unsigned int stat_usart_error_parity=0;
 unsigned int stat_usart_error_overrun=0;
 
 
+void rs485_send_on(void)
+{
+	PORTBbits.RB15 = 1; //управляем приёмо-передатчиком: разрешаем запись данных в линию
+		 
+	//пауза 400мкс, чтобы помехи после включения приёмо-передачтика затухли + пауза между modbus пакетами
+	T8CON = 0;
+	T8CONbits.TCS = 0;            //Timer8 Clock Source Select bit: Internal clock (Fcy=40MHz=Fosc/2=80мгц/2
+	T8CONbits.TCKPS = 3;          //1:256  1такт=25*256нс=6.4мкс
+	PR8 = USART_MODBUS_PAUSE;     //400мкс
+	TMR8 = 0;
+	IFS3bits.T8IF = 0; //сбрасываем флаг
+	T8CONbits.TON = 1; //включаем таймер 8
+	while (IFS3bits.T8IF == 0);
+}
+
+
+void rs485_send_off(void)
+{
+	unsigned char data;
+
+	while (U1STAbits.TRMT == 0); //ждем опустошения сдвигового регистра
+
+	PORTBbits.RB15 = 0; //управляем приёмо-передатчиком: запрещаем запись данных в линию
+
+	//вычищаем RX данные, т.к при отправке они заворачиваются, надо просто 4 раза RX считать.
+	data = U1RXREG;  //сдвиговый RX буфер для USART, имеет размер 4 байта
+	data = U1RXREG;  //поэтому вычитываем 4 байта,которые зеркально прилетают обратно при любых TX транзакциях
+	data = U1RXREG;
+	data = U1RXREG;
+
+	if (U1STAbits.FERR)
+		data = U1RXREG;  //paranoid verification, just in case
+
+	if (U1STAbits.OERR)
+		U1STAbits.OERR = 0; //NOTE: if U1MODEbits.BRGH == 0, then this flag sometimes on
+}
+
+
+static void rs485_init(void)
+{
+	TRISBbits.TRISB15 = 0; //ножка RB15 на выход
+	PORTBbits.RB15 = 0;    //управляем приёмо-передатчиком: запрещаем запись данных в линию
+}
+
+
 void UsartTxByteX(char data)
 {
-
 	while(U1STAbits.UTXBF==1); //ждем окончания отправки предыдущих данных
 	U1TXREG = data;
 }
@@ -120,8 +164,7 @@ void UsartWaitForSilence(void)
 //поэтому после включения таймера пройдет период 300мкс/6.4мкс=47 и выставится флаг IFS3bits.T8IF
 {
 	unsigned char data;
-		
-	
+
 	data=U1RXREG;  //сдвиговый RX буфер для USART, имеет размер 4 байта
 	data=U1RXREG;  //поэтому вычитываем 4 байта,которые зеркально прилетают обратно при любых TX транзакциях
 	data=U1RXREG;
@@ -151,46 +194,56 @@ void UsartWaitForSilence(void)
 			data=U1RXREG;
 			if(U1STAbits.OERR) U1STAbits.OERR=0; //переполнение буфера
 		}
-	}while(1);    
+	}while(1);
 }
 
 
 void UsartInit(void)
 {
-	//ножки
-	TRISFbits.TRISF2=1;     //RX
-	TRISFbits.TRISF3=0;     //TX
-	
-	TRISBbits.TRISB15=0;    //управляем выходом 1=TX 0=RX
-			
-	//модуль usart
-	U1MODEbits.BRGH=1;      //High Baud Rate Enable bit
-	U1BRG=86;                //115200кб/сек= (40*1000*1000Гц)/(4*(86+1))  
-	//U1MODEbits.BRGH=0;         //High Baud Rate Enable bit
-	//U1BRG=21;                //115200кб/сек: 113636бит/сек=(40*1000*1000Гц)/(16*(86+1))  
+	rs485_init();
 
-	U1MODEbits.UEN=0;       //TX RX - используем, а всякие CTS RTS - нет    
-	U1MODEbits.PDSEL=0;     //8bit четность выкл.
-	U1MODEbits.STSEL=0;     //1 стоп бит
-	U1MODEbits.URXINV=0;    //UxRX Idle state is ‘1’
+	//ножки
+	TRISFbits.TRISF2 = 1;     //RX
+	TRISFbits.TRISF3 = 0;     //TX
+
+	//модуль usart
+#if 0 
+	/* NOTE: We have problem with BRGH = 1
+	   errata https://ww1.microchip.com/downloads/en/DeviceDoc/80446f.pdf
+	   "19. Module: UART" - "if BRGH == 1 UART receptions may be corrupted"
+	   In our case: sometimes received additional 0-bit with 0 in first byte, other
+	   bites received shifted.
+	   Instead of 0x64 + 1_in_9bit, I receive 0xC8 + 0_in_9bit
+	*/
+	U1MODEbits.BRGH = 1;      //High Baud Rate Enable bit
+	U1BRG = 86;                //115200кб/сек= (40*1000*1000Гц)/(4*(86+1))  
+#endif
+	U1MODEbits.BRGH = 0;         //High Baud Rate Enable bit
+	U1BRG = 21;                //115200кб/сек: 113636бит/сек=(40*1000*1000Гц)/(16*(21+1))  
+	//U1BRG = 20;                //115200кб/сек: 119047бит/сек=(40*1000*1000Гц)/(16*(20+1))  
+
+	U1MODEbits.UEN = 0;       //TX RX - используем, а всякие CTS RTS - нет    
+	U1MODEbits.PDSEL = 0;     //8bit четность выкл.
+	U1MODEbits.STSEL = 0;     //1 стоп бит
+	U1MODEbits.URXINV = 0;    //UxRX Idle state is ‘1’
 		 
 	//прерывания
-	U1STAbits.URXISEL=0;    //прерывание по каждому пришедшему байту
-	U1STAbits.UTXISEL0=0;    //?
-	U1STAbits.UTXISEL1=0;
-	IPC2bits.U1RXIP=4;  //приоритет прерывания =4
-	IPC3bits.U1TXIP=4;  //приоритет прерывания =4
-	IPC16bits.U1EIP=4;  //приоритет прерывания =4
-	IEC0bits.U1TXIE=0;  //прерывания на передачу запрещены
-	IEC0bits.U1RXIE=0;  //прерывания на прием запрещены
-	IEC4bits.U1EIE=0;   //прерывания по ошибке запрещены
+	U1STAbits.URXISEL = 0;    //прерывание по каждому пришедшему байту
+	U1STAbits.UTXISEL0 = 0;    //?
+	U1STAbits.UTXISEL1 = 0;
+	IPC2bits.U1RXIP = 4;  //приоритет прерывания =4
+	IPC3bits.U1TXIP = 4;  //приоритет прерывания =4
+	IPC16bits.U1EIP = 4;  //приоритет прерывания =4
+	IEC0bits.U1TXIE = 0;  //прерывания на передачу запрещены
+	IEC0bits.U1RXIE = 0;  //прерывания на прием запрещены
+	IEC4bits.U1EIE = 0;   //прерывания по ошибке запрещены
 		
-	U1MODEbits.UARTEN=1;    //UART1 is enabled
-	U1STAbits.UTXEN=1;      //Transmit Enable
+	U1MODEbits.UARTEN = 1;    //UART1 is enabled
+	U1STAbits.UTXEN = 1;      //Transmit Enable
 
-	IFS0bits.U1TXIF=0;  //на всякий случай сбрасываем флаг прерывания      
-	IFS0bits.U1RXIF=0;
-	IFS4bits.U1EIF=0;
+	IFS0bits.U1TXIF = 0;  //на всякий случай сбрасываем флаг прерывания      
+	IFS0bits.U1RXIF = 0;
+	IFS4bits.U1EIF = 0;
 	
-	 return;
+	return;
 }

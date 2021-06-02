@@ -26,37 +26,16 @@ char Mbs_read(unsigned char *c)
 
 void Mbs_write(unsigned char frame_out[256], unsigned short len)
 {
-	 unsigned short i;
-	 unsigned char data;
+	unsigned short i;
 
- 	/////////////////
-	PORTBbits.RB15=1;
-	 
-	//пауза 400мкс
-	T8CON=0;
-	T8CONbits.TCS=0;            //Timer8 Clock Source Select bit: Internal clock (Fcy=40MHz=Fosc/2=80мгц/2
-	T8CONbits.TCKPS=3;          //1:256  1такт=25*256нс=6.4мкс
-	PR8=USART_MODBUS_PAUSE;     //400мкс
-	TMR8=0;
-	IFS3bits.T8IF=0; //сбрасываем флаг
-	T8CONbits.TON=1; //включаем таймер 8
-	while(IFS3bits.T8IF==0);
-	////////////////
+	rs485_send_on();
 	
-	 for(i=0;i<len;i++)
-	 {
+	for(i=0;i<len;i++)
+	{
 		UsartTxByteX(frame_out[i]);
-	 }
-	 
-	//////////////////////////////
-	while(U1STAbits.TRMT==0); //ждем опустошения сдвигового регистра
-	PORTBbits.RB15=0;
-	//вычищаем RX данные, т.к при отправке они заворачиваются, надо просто 4 раза RX считать.
-	data=U1RXREG;  //сдвиговый RX буфер для USART, имеет размер 4 байта
-	data=U1RXREG;  //поэтому вычитываем 4 байта,которые зеркально прилетают обратно при любых TX транзакциях
-	data=U1RXREG;
-	data=U1RXREG;
-	//////////////////////////
+	}
+	
+	rs485_send_off();
 }
 
 
