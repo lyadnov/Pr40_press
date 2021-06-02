@@ -63,6 +63,7 @@ void pmode_change(unsigned int value)
 	{
 		cfg_pmode = value;
 		if(value == 1) {
+			PORTFbits.RF0 = 1;
 			PORTDbits.RD2 = 1; //P1 mode alt
 		}
 		else if(value == 2)
@@ -76,6 +77,7 @@ void pmode_change(unsigned int value)
 		if(value != 0)
 			return; //ошибка, только через 0 можно менять значение pmode
 		cfg_pmode = value;
+		PORTFbits.RF0 = 0; //P1 mode
 		PORTDbits.RD2 = 0; //P1 mode alt
 		PORTFbits.RF1 = 0; //P3 mode
 		PORTDbits.RD1 = 0; //P2 mode
@@ -98,6 +100,7 @@ void pmode_init(void)
 	//ножки
 	//C1CTRL1bits.REQOP = 1; //Set Disable mode for CAN module (на всякий случай)
 
+	TRISFbits.TRISF0 = 0; //P1 mode
 	TRISDbits.TRISD2 = 0; //P1 mode alt
 	TRISFbits.TRISF1 = 0; //P3 mode
 	TRISDbits.TRISD1 = 0; //P2 mode
