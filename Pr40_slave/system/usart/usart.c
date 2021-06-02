@@ -3,74 +3,20 @@
 #include "system\modbus\modbus.h"
 #include "system\usart\usart.h"
 
-//----------константы-------------- 
-
-//---------переменные--------------
 unsigned int stat_usart_error_timout=0;
 unsigned int stat_usart_error_frame=0;
 unsigned int stat_usart_error_parity=0;
 unsigned int stat_usart_error_overrun=0;
 
 
-//----------функции----------------
-
-//--------------------------основна€ часть-------------------------------------------
-
-
-///////////////////////////////////
-void UsartInit(void)
-{
-	//ножки
-	TRISFbits.TRISF2=1;     //RX
-	TRISFbits.TRISF3=0;     //TX
-	
-	TRISBbits.TRISB15=0;    //управл€ем выходом 1=TX 0=RX
-
-			
-	//модуль usart
-	U1MODEbits.BRGH=1;      //High Baud Rate Enable bit
-	U1BRG=86;                //115200кб/сек= (40*1000*1000√ц)/(4*(86+1))  
-	//U1MODEbits.BRGH=0;         //High Baud Rate Enable bit
-	//U1BRG=21;                //115200кб/сек: 113636бит/сек=(40*1000*1000√ц)/(16*(86+1))  
-
-	U1MODEbits.UEN=0;       //TX RX - используем, а вс€кие CTS RTS - нет    
-	U1MODEbits.PDSEL=0;     //8bit четность выкл.
-	U1MODEbits.STSEL=0;     //1 стоп бит
-	U1MODEbits.URXINV=0;    //UxRX Idle state is С1Т
-		 
-	//прерывани€
-	U1STAbits.URXISEL=0;    //прерывание по каждому пришедшему байту
-	U1STAbits.UTXISEL0=0;    //?
-	U1STAbits.UTXISEL1=0;
-	IPC2bits.U1RXIP=4;  //приоритет прерывани€ =4
-	IPC3bits.U1TXIP=4;  //приоритет прерывани€ =4
-	IPC16bits.U1EIP=4;  //приоритет прерывани€ =4
-	IEC0bits.U1TXIE=0;  //прерывани€ на передачу запрещены
-	IEC0bits.U1RXIE=0;  //прерывани€ на прием запрещены
-	IEC4bits.U1EIE=0;   //прерывани€ по ошибке запрещены
-		
-	U1MODEbits.UARTEN=1;    //UART1 is enabled
-	U1STAbits.UTXEN=1;      //Transmit Enable
-
-	IFS0bits.U1TXIF=0;  //на вс€кий случай сбрасываем флаг прерывани€      
-	IFS0bits.U1RXIF=0;
-	IFS4bits.U1EIF=0;
-	
-	 return;
-}
-
-
-/////////////////////////////////////
 void UsartTxByteX(char data)
 {
 
 	while(U1STAbits.UTXBF==1); //ждем окончани€ отправки предыдущих данных
 	U1TXREG = data;
- 
 }
 
 
-///////////////////////////////////
 char UsartRxByte(unsigned char *data)
 //принимает байт, таймаут 13-26мсек
 //возвращает 1, в случае ошибки, 0 если все успешно
@@ -107,8 +53,6 @@ char UsartRxByte(unsigned char *data)
 }
 
 
-
-///////////////////////////////////
 char UsartRxByte_withTimeout(unsigned char *data)  //используетс€ только мастером
 //принимает байт, таймаут 13-26мсек
 //возвращает 1, в случае ошибки, 0 если все успешно
@@ -168,7 +112,6 @@ char UsartRxByte_withTimeout(unsigned char *data)  //используетс€ только мастеро
 }
 
 
-///////////////////////////////////
 void UsartWaitForSilence(void)
 //функци€ ждет пока в линни не наступит тишина длительностью 3.5символа
 //3.5символа= ( 1сек / ((115200бит_сек/10бит_в_байте)) )*3.5 = 300мкс
@@ -209,7 +152,45 @@ void UsartWaitForSilence(void)
 			if(U1STAbits.OERR) U1STAbits.OERR=0; //переполнение буфера
 		}
 	}while(1);    
-
 }
 
 
+void UsartInit(void)
+{
+	//ножки
+	TRISFbits.TRISF2=1;     //RX
+	TRISFbits.TRISF3=0;     //TX
+	
+	TRISBbits.TRISB15=0;    //управл€ем выходом 1=TX 0=RX
+			
+	//модуль usart
+	U1MODEbits.BRGH=1;      //High Baud Rate Enable bit
+	U1BRG=86;                //115200кб/сек= (40*1000*1000√ц)/(4*(86+1))  
+	//U1MODEbits.BRGH=0;         //High Baud Rate Enable bit
+	//U1BRG=21;                //115200кб/сек: 113636бит/сек=(40*1000*1000√ц)/(16*(86+1))  
+
+	U1MODEbits.UEN=0;       //TX RX - используем, а вс€кие CTS RTS - нет    
+	U1MODEbits.PDSEL=0;     //8bit четность выкл.
+	U1MODEbits.STSEL=0;     //1 стоп бит
+	U1MODEbits.URXINV=0;    //UxRX Idle state is С1Т
+		 
+	//прерывани€
+	U1STAbits.URXISEL=0;    //прерывание по каждому пришедшему байту
+	U1STAbits.UTXISEL0=0;    //?
+	U1STAbits.UTXISEL1=0;
+	IPC2bits.U1RXIP=4;  //приоритет прерывани€ =4
+	IPC3bits.U1TXIP=4;  //приоритет прерывани€ =4
+	IPC16bits.U1EIP=4;  //приоритет прерывани€ =4
+	IEC0bits.U1TXIE=0;  //прерывани€ на передачу запрещены
+	IEC0bits.U1RXIE=0;  //прерывани€ на прием запрещены
+	IEC4bits.U1EIE=0;   //прерывани€ по ошибке запрещены
+		
+	U1MODEbits.UARTEN=1;    //UART1 is enabled
+	U1STAbits.UTXEN=1;      //Transmit Enable
+
+	IFS0bits.U1TXIF=0;  //на вс€кий случай сбрасываем флаг прерывани€      
+	IFS0bits.U1RXIF=0;
+	IFS4bits.U1EIF=0;
+	
+	 return;
+}
