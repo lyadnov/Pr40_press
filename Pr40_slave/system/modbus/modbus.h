@@ -8,7 +8,7 @@
 #define USART_MODBUS_PAUSE             62      //400мкc выставляем ножку TX в 1 и ждем пока сигнал на линии установиться + пауза между MODBUS-пакетами
 #define NUMBER_OF_RESENDS              1       //количество попыток получить данные мастеру от слейва
 
-#define DEFAULT_SLAVE_ADDR              1
+#define DEFAULT_SLAVE_ADDR              125
 #define DEFAULT_START_PAUSE             475    //пауза перед стартом измерений в мс
 #define START_PAUSE_MIN_VALUE           1
 #define START_PAUSE_MAX_VALUE           999
