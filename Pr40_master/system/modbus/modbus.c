@@ -27,7 +27,7 @@ void modbus_init(void)
 	
 	//ножки
 #ifdef MY_MASTER_OLD
-	TRISBbits.TRISB15=0; //ножка RB15 на выходPR3
+	TRISBbits.TRISB15=0; //ножка RB15 на выход
 #else
   TRISBbits.TRISB14=0; //ножка RB14 на выход
 #endif
