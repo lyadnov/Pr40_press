@@ -89,7 +89,7 @@ char UsartRxByte(unsigned char *data)
 		//slave_regs[REG_ERROR_USART_FRAME]++;
 		return(1);
 	}
-	if (U1STAbits.PERR)                 // If a framing error occured
+	if (U1STAbits.PERR)                 // If a parity error occured
 	{
 		*data = U1RXREG; 
 		//error_num=err_UsartRxParityError;
@@ -146,8 +146,8 @@ char UsartRxByte_withTimeout(unsigned char *data)  //используется только мастеро
 		stat_usart_error_frame++;
 		return(1);
 	}
-		if(U1STAbits.PERR)                 // If a parity error occured
-		{
+	if (U1STAbits.PERR)                 // If a parity error occured
+	{
 		*data = U1RXREG; 
 		stat_usart_error_parity++;
 		return(1);
@@ -175,10 +175,10 @@ void UsartWaitForSilence(void)
 {
 	unsigned char data;
 
-	data=U1RXREG;  //сдвиговый RX буфер для USART, имеет размер 4 байта
-	data=U1RXREG;  //поэтому вычитываем 4 байта,которые зеркально прилетают обратно при любых TX транзакциях
-	data=U1RXREG;
-	data=U1RXREG;
+	data = U1RXREG;  //сдвиговый RX буфер для USART, имеет размер 4 байта
+	data = U1RXREG;  //поэтому вычитываем 4 байта,которые зеркально прилетают обратно при любых TX транзакциях
+	data = U1RXREG;
+	data = U1RXREG;
 
 	T8CON = 0;
 	T8CONbits.TCS = 0;            //Timer8 Clock Source Select bit: Internal clock (Fcy=40MHz=Fosc/2=80мгц/2
@@ -214,9 +214,9 @@ void UsartInit(void)
 	rs485_init();
 
 	//ножки
-	TRISFbits.TRISF2 = 1;     //RX
-	TRISFbits.TRISF3 = 0;     //TX
-
+	TRISFbits.TRISF2 = 1;    //RX
+	TRISFbits.TRISF3 = 0;    //TX
+	
 	//модуль usart
 #if 0 
 	/* NOTE: We have problem with BRGH = 1
