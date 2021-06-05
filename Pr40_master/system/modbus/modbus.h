@@ -38,12 +38,12 @@
 #define REG_MAGIC                       0x00 //тут всегда 0x1234
 //управление
 #define REG_CONTROL_MEASURE_START       0x01 //при записи в этот регистр 1цы начинаются измерения, по всем слейвам
-  #define  CMD_MEASURE_START            0x01
+	#define  CMD_MEASURE_START            0x01
 #define REG_CONTROL_SAVE                0x02 //при записи в этот регистр 1-4, сохраняются соответствующие параметры в EEPROM
-  #define  CMD_SAVE_K                   0x01
-  #define  CMD_SAVE_SLAVE_ADDR          0x02
-  #define  CMD_SAVE_START_PAUSE         0x03
-  #define  CMD_SAVE_MEASURE_INTERVAL    0x04
+	#define  CMD_SAVE_K                   0x01
+	#define  CMD_SAVE_SLAVE_ADDR          0x02
+	#define  CMD_SAVE_START_PAUSE         0x03
+	#define  CMD_SAVE_MEASURE_INTERVAL    0x04
 //конфигурация
 #define REG_CONFIG_SLAVE_ADDR           0x03
 #define REG_CONFIG_START_PAUSE          0x04 //пауза перед стартом измерений в мсек
@@ -100,26 +100,22 @@
 
 //---------переменные--------------
 extern unsigned int stat_modbus_all_frame;
-  extern unsigned int stat_usart_frame_bad;  //пришли данные не той длинны что ожидали получить
-  //modbus_stat_frame_bad;  //пришли данные не той длинны что ожидали получить
-    //unsigned int stat_usart_error_timout=0;
-    //unsigned int stat_usart_error_frame=0;
-    //unsigned int stat_usart_error_parity=0;
-    //unsigned int stat_usart_error_overrun=0;
-  extern unsigned int stat_usart_frame_good;
-    extern unsigned int stat_modbus_frame_error_slave_addr;
-    extern unsigned int stat_modbus_frame_error_func;
-    extern unsigned int stat_modbus_frame_error_crc;
-    extern unsigned int stat_modbus_frame_crc_ok;
+	extern unsigned int stat_usart_frame_bad;  //пришли данные не той длинны что ожидали получить
+	//modbus_stat_frame_bad;  //пришли данные не той длинны что ожидали получить
+		//unsigned int stat_usart_error_timout=0;
+		//unsigned int stat_usart_error_frame=0;
+		//unsigned int stat_usart_error_parity=0;
+		//unsigned int stat_usart_error_overrun=0;
+	extern unsigned int stat_usart_frame_good;
+		extern unsigned int stat_modbus_frame_error_slave_addr;
+		extern unsigned int stat_modbus_frame_error_func;
+		extern unsigned int stat_modbus_frame_error_crc;
+		extern unsigned int stat_modbus_frame_crc_ok;
 
 
 //----------функции----------------
 void modbus_init(void);
 void modbus_eeprom_write_default_values(void);
-void modbus_main(void);
-
-
-
 
 
 #endif //_MODBUS_INCLUDED

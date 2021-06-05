@@ -11,10 +11,10 @@
 typedef unsigned char byte;						/* create byte type */
 /* master structure */
 typedef struct {
-   int slave; 											/* number of the slave to call*/
-   int function; 										/* modbus function to emit*/
-   int address;										/* slave address */
-   int length;											/* data length */
+	int slave; 											/* number of the slave to call*/
+	int function; 										/* modbus function to emit*/
+	int address;										/* slave address */
+	int length;											/* data length */
 } Mbm_frame;
 
 

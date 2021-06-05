@@ -27,12 +27,12 @@
 //---------переменные--------------
 typedef union 
 {
-    struct 
-    {
-        unsigned char f_refresh 	    :1; //разрешено автообновление менюшек или нет
-        unsigned char f_autochange      :1; //разрешено залипание кнопок в данном меню или нет
-    }; 
-    unsigned char byte;
+	struct 
+	{
+		unsigned char f_refresh 	    :1; //разрешено автообновление менюшек или нет
+		unsigned char f_autochange      :1; //разрешено залипание кнопок в данном меню или нет
+	}; 
+	unsigned char byte;
 } flags_menu_struct;
 extern flags_menu_struct flags_menu;
 
@@ -68,18 +68,18 @@ extern unsigned char active_menu;
 //для курсора
 typedef union 
 {
-    struct                                  //управление курсором
-    {
-        unsigned char f_cursor_on        :1; 
-    }; 
-    unsigned char byte;
+	struct                                  //управление курсором
+	{
+		unsigned char f_cursor_on        :1; 
+	}; 
+	unsigned char byte;
 } flags_cursor_struct;
 
 typedef struct  
 {
 	flags_cursor_struct flags;
-    unsigned char position;  //текущая позиция курсора
-    unsigned char count;     //счетчик, управляет морганием курсора    
+	unsigned char position;  //текущая позиция курсора
+	unsigned char count;     //счетчик, управляет морганием курсора    
 } cursor_struct;
 
 
@@ -243,9 +243,3 @@ void menu_picture_out(unsigned char * buf,unsigned char x,unsigned char y,unsign
 #define ss	0xE6   	//щ
 
 #endif
-
-
-
-
-
-
