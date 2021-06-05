@@ -36,12 +36,12 @@
 #define REG_MAGIC                       0x00 //тут всегда 0x1234
 //управление
 #define REG_CONTROL_MEASURE_START       0x01 //при записи в этот регистр 1цы начинаютс€ измерени€, по всем слейвам
-  #define  CMD_MEASURE_START            0x01
+	#define  CMD_MEASURE_START            0x01
 #define REG_CONTROL_SAVE                0x02 //при записи в этот регистр 1-4, сохран€ютс€ соответствующие параметры в EEPROM
-  #define  CMD_SAVE_K                   0x01
-  #define  CMD_SAVE_SLAVE_ADDR          0x02
-  #define  CMD_SAVE_START_PAUSE         0x03
-  #define  CMD_SAVE_MEASURE_INTERVAL    0x04
+	#define  CMD_SAVE_K                   0x01
+	#define  CMD_SAVE_SLAVE_ADDR          0x02
+	#define  CMD_SAVE_START_PAUSE         0x03
+	#define  CMD_SAVE_MEASURE_INTERVAL    0x04
 //конфигураци€
 #define REG_CONFIG_SLAVE_ADDR           0x03
 #define REG_CONFIG_START_PAUSE          0x04 //пауза перед стартом измерений в мсек
@@ -56,6 +56,7 @@
 #define REG_CONFIG_K8                   (REG_CONFIG_K1+7) 
 #define REG_CONFIG_K9                   (REG_CONFIG_K1+8) 
 #define REG_CONFIG_K10                  (REG_CONFIG_K1+9) //калибровочный коэффициент дл€ 10го датчика
+
 //статистика Modbus
 #define REG_STAT_TOTAL_FRAME_NUM        0x10
 #define REG_STAT_SLAVE_ADDR_MISMATCH    0x11
