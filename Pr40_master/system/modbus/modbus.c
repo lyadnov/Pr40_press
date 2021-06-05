@@ -15,24 +15,13 @@ unsigned int stat_modbus_all_frame=0;
 		unsigned int stat_modbus_frame_error_slave_addr=0;
 		unsigned int stat_modbus_frame_crc_ok=0;
 
-///////////////////////////////////
+
 void modbus_init(void)
 {
-	
-	//ножки
-#ifdef MY_MASTER_OLD
-	TRISBbits.TRISB15=0; //ножка RB15 на выход
-#else
-	TRISBbits.TRISB14=0; //ножка RB14 на выход
-#endif
-	//переменные
-		
-	//прерывания
-	
 	return;
 }
 
-///////////////////////////////////
+
 void modbus_eeprom_write_default_values(void)
 {
 		return;

@@ -16,63 +16,27 @@ int Csm_get_data(unsigned short len)
 	int i;
 	unsigned char read_data;
 
-	for(i=0;i<len;i++)
+	for (i = 0; i < len; i++)
 	{
-		if(!UsartRxByte_withTimeout(&read_data))
-		{
-			frame_in[i]=read_data;
-		}
+		if (!UsartRxByte_withTimeout(&read_data))
+			frame_in[i] = read_data;
 		else
-		{
 			return(0);
-		}
 	}
 	return(1);
 }
 
+
 void Csm_send(unsigned short len_out) //для широковещательных пакетов
 {
 	int i;
-	unsigned char data;
+
+	rs485_send_on();
 	
-	/////////////////
-#ifdef MY_MASTER_OLD
-	PORTBbits.RB15=1; //управляем приёмо-передатчиком: разрешаем запись данных в линию
-#else
-	PORTBbits.RB14=1; //управляем приёмо-передатчиком: разрешаем запись данных в линию
-#endif
-		 
-	//пауза 400мкс, чтобы помехи после включения приёмо-передачтика затухли + стандартная пауза между Modbus пакетами
-	T8CON=0;
-	T8CONbits.TCS=0;            //Timer8 Clock Source Select bit: Internal clock (Fcy=40MHz=Fosc/2=80мгц/2
-	T8CONbits.TCKPS=3;          //1:256  1такт=25*256нс=6.4мкс
-	PR8=USART_MODBUS_PAUSE;     //=400мкс
-	TMR8=0;
-	IFS3bits.T8IF=0; //сбрасываем флаг
-	T8CONbits.TON=1; //включаем таймер 8
-	while(IFS3bits.T8IF==0);
-	////////////////
-	
-	for(i=0;i<len_out;i++)
-	{
+	for (i = 0; i < len_out; i++)
 		UsartTxByteX(frame_out[i]);
-	}
 
-	//////////////////////////////
-	while(U1STAbits.TRMT==0); //ждем опустошения сдвигового регистра
-
-#ifdef MY_MASTER_OLD
-	PORTBbits.RB15=0; //управляем приёмо-передатчиком: запрещаем запись данных в линию
-#else
-	PORTBbits.RB14=0; //управляем приёмо-передатчиком: запрещаем запись данных в линию
-#endif
-
-	//вычищаем RX данные, т.к при отправке они заворачиваются, надо просто 4 раза RX считать.
-	data=U1RXREG;  //сдвиговый RX буфер для USART, имеет размер 4 байта
-	data=U1RXREG;  //поэтому вычитываем 4 байта,которые зеркально прилетают обратно при любых TX транзакциях
-	data=U1RXREG;
-	data=U1RXREG;
-	//////////////////////////
+	rs485_send_off();
 
 	return;
 }
@@ -83,50 +47,14 @@ int Csm_send_and_get_result(unsigned short len_out, unsigned short len_in)
 {
 	int i;
 	int ret;
-	unsigned char data;
 
-	/////////////////
-#ifdef MY_MASTER_OLD
-	PORTBbits.RB15=1; //управляем приёмо-передатчиком: разрешаем запись данных в линию
-#else
-	PORTBbits.RB14=1; //управляем приёмо-передатчиком: разрешаем запись данных в линию
-#endif
-	 
-	 //пауза 400мкс, чтобы помехи после включения приёмо-передачтика затухли + стандартная пауза между Modbus пакетами
-	T8CON=0;
-	T8CONbits.TCS=0;            //Timer8 Clock Source Select bit: Internal clock (Fcy=40MHz=Fosc/2=80мгц/2
-	T8CONbits.TCKPS=3;          //1:256  1такт=25*256нс=6.4мкс
-	PR8=USART_MODBUS_PAUSE;     //=400мкс
-	TMR8=0;
-	IFS3bits.T8IF=0; //сбрасываем флаг
-	T8CONbits.TON=1; //включаем таймер 8
-	while(IFS3bits.T8IF==0);
-	////////////////
-	 
-	for(i=0;i<len_out;i++)
-	{
-		/* send data */
+	rs485_send_on();
+ 
+	for(i = 0; i < len_out; i++)
 		UsartTxByteX(frame_out[i]);
-	}
 
-	//////////////////////////////
-	while(U1STAbits.TRMT==0); //ждем опустошения сдвигового регистра
+	rs485_send_off();
 
-#ifdef MY_MASTER_OLD
-	PORTBbits.RB15=0; //управляем приёмо-передатчиком: запрещаем запись данных в линию
-#else
-	PORTBbits.RB14=0; //управляем приёмо-передатчиком: запрещаем запись данных в линию
-#endif
-
-
-	//вычищаем RX данные, т.к при отправке они заворачиваются, надо просто 4 раза RX считать.
-	data=U1RXREG;  //сдвиговый RX буфер для USART, имеет размер 4 байта
-	data=U1RXREG;  //поэтому вычитываем 4 байта,которые зеркально прилетают обратно при любых TX транзакциях
-	data=U1RXREG;
-	data=U1RXREG;
-	
-	//////////////////////////
-	
 	ret = Csm_get_data(len_in);
 
 	return ret;
